@@ -32,7 +32,14 @@ def run():
     df['year'] = df['year'].astype(int)
     st.dataframe(df, height=100)
 
-
+    df_map = pd.read_csv(data_root_path + 'average-latitude-longitude-countries.csv')
+    df = df.merge(df_map, left_on='jur_name', right_on='Country')
+    st.map(df,
+           latitude='Latitude',
+           longitude='Longitude',
+           size='taxe_paid',
+           #color='sector'
+           )
     st.markdown('''
     
     ## CBCR data for the selected company
