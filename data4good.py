@@ -8,6 +8,11 @@ import altair as alt
 from numpy.lib.function_base import select
 from streamlit.logger import get_logger
 
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 LOGGER = get_logger(__name__)
 
@@ -101,6 +106,11 @@ def run():
     ### - comparison with sector / country
         
     #### - per company
+    
+    For each company, the same grouping system is applied. A box plot for each year is compute
+    given an indication of the distribution of the number of report per year and per company.
+    On the same graphic, the red dash line indicate the position of the selected company
+    
     ''')
     df_company_per_year = df.groupby(['year', 'mnc']).aggregate(
         {
@@ -111,13 +121,38 @@ def run():
     df_company_per_year.columns = df_company_per_year.columns.map('_'.join)
     df_company_per_year = df_company_per_year.reset_index()
     st.dataframe(df_company_per_year)
-    st.line_chart(df_company_per_year, x='year', y='year_count', color='mnc')
+
+    fig = px.box(df_company_per_year, x="year", y="year_count")
+    plot_min = df_selected_company_per_year['year'].min()
+    plot_max = df_selected_company_per_year['year'].max()
+    # add a second axis that overlays the existing one
+    fig.layout.xaxis2 = go.layout.XAxis(overlaying='x', range=[plot_min, plot_max], showticklabels=False)
+    fig.add_scatter(
+        x=list(df_selected_company_per_year['year']),
+        y=list(df_selected_company_per_year['year_count']),
+        mode='lines', xaxis='x2',
+        showlegend=False, line=dict(dash='dash', color="firebrick", width=5))
+    st.plotly_chart(fig)
+
 
 
     st.markdown('''
     #### - per sector
     ''')
-    df_per_sector = df.groupby(['year', 'sector']).aggregate(
+    df_per_sector_per_year = df.groupby(['year', 'sector']).aggregate(
+        {
+            'year': ['count'],
+            'tax_paid': ['sum', 'min', 'max', 'mean']
+        }
+    )
+    df_per_sector_per_year.columns = df_per_sector_per_year.columns.map('_'.join)
+    df_per_sector_per_year = df_per_sector_per_year.reset_index()
+
+    st.line_chart(df_per_sector_per_year, x='year', y='year_count', color='sector')
+    st.markdown('''
+       By sector, distribution of the number of report (for any year)
+       ''')
+    df_per_sector = df.groupby(['sector']).aggregate(
         {
             'year': ['count'],
             'tax_paid': ['sum', 'min', 'max', 'mean']
@@ -125,23 +160,67 @@ def run():
     )
     df_per_sector.columns = df_per_sector.columns.map('_'.join)
     df_per_sector = df_per_sector.reset_index()
-    st.dataframe(df_per_sector)
-    st.line_chart(df_per_sector, x='year', y='year_count', color='sector')
+    fig = px.box(df_per_sector, x="sector", y="year_count")
+    st.plotly_chart(fig)
 
     st.markdown('''
-    #### - per country
-    ''')
-    df_per_country = df.groupby(['year', 'jur_name']).aggregate(
+       In the same sector as the selected company, distribution of the number of report
+       per year
+       ''')
+    company_sector = list(df_selected_company['sector'].unique())[0]
+    df_of_sector = df[df['sector']==company_sector]
+    st.dataframe(df_of_sector)
+    df_of_sector_per_year = df_of_sector.groupby(['year', 'mnc']).aggregate(
         {
             'year': ['count'],
             'tax_paid': ['sum', 'min', 'max', 'mean']
         }
     )
+    df_of_sector_per_year.columns = df_of_sector_per_year.columns.map('_'.join)
+    df_of_sector_per_year = df_of_sector_per_year.reset_index()
 
+    fig = px.box(df_of_sector_per_year, x="year", y="year_count")
+    plot_min = df_selected_company_per_year['year'].min()
+    plot_max = df_selected_company_per_year['year'].max()
+    # add a second axis that overlays the existing one
+    fig.layout.xaxis2 = go.layout.XAxis(overlaying='x', range=[plot_min, plot_max], showticklabels=False)
+    fig.add_scatter(
+        x=list(df_of_sector_per_year['year']),
+        y=list(df_of_sector_per_year['year_count']),
+        mode='lines', xaxis='x2',
+        showlegend=False, line=dict(dash='dash', color="firebrick", width=5))
+    st.plotly_chart(fig)
+
+
+    st.markdown('''
+    #### - per country
+    ''')
+
+    df_per_country_per_year = df.groupby(['year', 'jur_name']).aggregate(
+        {
+            'year': ['count'],
+            'tax_paid': ['sum', 'min', 'max', 'mean']
+        }
+    )
+    df_per_country_per_year.columns = df_per_country_per_year.columns.map('_'.join)
+    df_per_country_per_year = df_per_country_per_year.reset_index()
+    st.dataframe(df_per_country_per_year)
+    st.line_chart(df_per_country_per_year, x='year', y='year_count', color='jur_name')
+
+
+    st.markdown('''
+       By country, distribution of the number of report (for any year)
+       ''')
+    df_per_country = df.groupby(['jur_name']).aggregate(
+        {
+            'year': ['count'],
+            'tax_paid': ['sum', 'min', 'max', 'mean']
+        }
+    )
     df_per_country.columns = df_per_country.columns.map('_'.join)
     df_per_country = df_per_country.reset_index()
-    st.dataframe(df_per_country)
-    st.line_chart(df_per_country, x='year', y='year_count', color='jur_name')
+    fig = px.box(df_per_country, x="jur_name", y="year_count")
+    st.plotly_chart(fig)
 
 
 
