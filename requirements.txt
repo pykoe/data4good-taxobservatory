@@ -1,5 +1,6 @@
-altair
-numpy
-pandas
+altair~=5.2.0
+numpy~=1.26.4
+pandas~=2.2.1
 pydeck
-streamlit
+streamlit~=1.32.2
+plotly~=5.20.0
