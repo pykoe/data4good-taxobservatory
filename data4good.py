@@ -92,7 +92,7 @@ def run():
            latitude='Latitude',
            longitude='Longitude',
            size='taxe_paid',
-           #color='sector'
+           # color='sector'
            )
     df_selected_company_per_year = (df_selected_company.groupby(['year'])
                                     .aggregate(
