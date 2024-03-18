@@ -19,7 +19,7 @@ def run():
     )
 
     st.title('Company explorer')
-    st.markdown("objectives : analyze cbcr data from a given company "
+    st.markdown("objectives : analyze CBCR data from a given company "
                 "e.g., analyze data from Shell")
 
 
@@ -62,13 +62,6 @@ def run():
             'fiscal year'
         )
 
-        # filscal_year_list = list(df['year'].unique())[::-1]
-        # st.radio(
-        #     'Select a year',
-        #     # key="None",
-        #     options=filscal_year_list,
-        # )
-        # st.checkbox('Select a year', filscal_year_list)
 
     st.dataframe(df_selected_company)
 
@@ -167,7 +160,7 @@ def run():
             'tax_paid': ['sum'],
             'related_revenues': ['sum'],
             'profit_before_tax': ['sum'],
-            'employees':['sum']
+            'employees': ['sum']
         }
     )
     df_fiscal_year_country.columns = df_fiscal_year_country.columns.map('_'.join)
