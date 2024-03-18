@@ -19,26 +19,27 @@ def run():
     )
 
     st.title('Company explorer')
+
     st.markdown("objectives : analyze CBCR data from a given company "
                 "e.g., analyze data from Shell")
 
-
-    # https://altair.streamlit.app/~/+/Pacman_Chart
-    st.markdown("## raw data - Cleaned CBCR data")
+    st.markdown("#### raw data - Cleaned CBCR data")
     data_root_path = './data/'
     df = pd.read_csv(data_root_path + 'dataset_multi_years_cleaned_completed (1).tab',
                      sep='\t')
     df['year'] = df['year'].astype(int)
-    st.dataframe(df)
+    st.dataframe(df, height=100)
 
 
-    st.markdown("## CBCR data for the selected company")
-    st.markdown("CBCR data for the selected company")
-
-    multi = '''*SELECT BOX “COMPANY” (possibly ordered by sector)
+    st.markdown('''
+    
+    ## CBCR data for the selected company
+    
+    On the left panel, you will find a select box for a company selection
+    
+    *SELECT BOX “COMPANY” (possibly ordered by sector)
     note to inform that if a company is absent, it means we have no report + that reports can be submitted through contact page*
-        '''
-    st.markdown(multi)
+        ''')
 
     selected_element_map = {}
 
@@ -66,9 +67,17 @@ def run():
     st.dataframe(df_selected_company)
 
     st.markdown('''
-    ## 1. Reports disclosed
+    # 1. Reports disclosed
         
     ### - reports published and transparency scores
+        
+    As a company has been selected, the dataset is now filtered according to this company.
+    We ccan now group together all rows corresponding to a year (group by year) and compute 
+    for each group several metric : 
+    
+    year_count will count the number of rows in the group (in our case this corresponds to the 
+    number of report produce by the company on the given year
+    ....
     ''')
 
     df_selected_company_per_year = (df_selected_company.groupby(['year'])
@@ -80,7 +89,11 @@ def run():
     ))
     df_selected_company_per_year.columns = df_selected_company_per_year.columns.map('_'.join)
     df_selected_company_per_year = df_selected_company_per_year.reset_index()
+
+    st.markdown('''#### dataframe of selected company peryear''')
     st.dataframe(df_selected_company_per_year)
+
+    st.markdown('''#### line chart showing the evolution of number of report over the time''')
     st.line_chart(df_selected_company_per_year, x='year', y='year_count')
 
 
@@ -133,7 +146,7 @@ def run():
 
 
     st.markdown('''
-    ## 2. Analysis of CbCRs published
+    # 2. Analysis of CbCRs published
        SELECT BOX "FISCAL YEAR"
         a) company’s key data (on selected FY) : 
             - how big is it ? total revenues, total related party revenues, pre-tax profits, taxes paid, employees
