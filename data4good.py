@@ -88,7 +88,12 @@ def run():
     number of report produce by the company on the given year
     ....
     ''')
-
+    st.map(df_selected_company,
+           latitude='Latitude',
+           longitude='Longitude',
+           size='taxe_paid',
+           #color='sector'
+           )
     df_selected_company_per_year = (df_selected_company.groupby(['year'])
                                     .aggregate(
         {
