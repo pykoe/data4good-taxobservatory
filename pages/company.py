@@ -56,7 +56,6 @@ def show_company():
             selection_colmun_label,
     ):
         element_list = list(df[selection_colmun_name].unique())[::-1]
-
         selected_element_map[selection_colmun_name] = st.selectbox('Select a ' + selection_colmun_label, element_list,
                                                                    index=len(element_list) - 1)
         df_selected_element = df[df[selection_colmun_name] == selected_element_map[selection_colmun_name]]
