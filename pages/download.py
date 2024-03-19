@@ -17,7 +17,15 @@ def show_downlaod_data():
 
     text = '''
     # Download data   
-    objectives : 
+    objective : provide access to the raw data
+    SELECT BOX “FISCAL YEAR” / “HQ COUNTRY” / “SECTOR” / “COMPANY”  
     
+    Reports list and quality indicators  (show snapshot)  
+    CbCRs intra-reports data  (show snapshot)  
+    Tax havens list (show snapshot)  
+    OECD tables used  
+    xx  (show snapshot)  
+    xxx (show snapshot)  
+
     '''
     st.markdown(text)

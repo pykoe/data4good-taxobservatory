@@ -17,7 +17,8 @@ def show_methodology():
 
     text = '''
     # Methodology   
-    objectives :   
+    objectives : provide transparency over how the tracker was built and choices we made  
+    e.g., https://www.carbonbombs.org/methodology
     
     
     '''
