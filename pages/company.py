@@ -14,8 +14,7 @@ import plotly.graph_objects as go
 def show_company():
     st.title('Company explorer')
 
-    st.markdown("objectives : analyze CBCR data from a given company "
-                "e.g., analyze data from Shell")
+    st.markdown("*objectives : analyze CBCR data from a given company e.g., analyze data from Shell*")
 
     st.markdown("#### raw data - Cleaned CBCR data")
     data_root_path = './data/'
