@@ -16,28 +16,33 @@ def show_company():
 
     st.markdown("*objectives : analyze CBCR data from a given company e.g., analyze data from Shell*")
 
-    st.markdown("#### raw data - Cleaned CBCR data")
+
     data_root_path = './data/'
     df = pd.read_csv(data_root_path + 'dataset_multi_years_cleaned_completed (1).tab',
                      sep='\t')
     df['year'] = df['year'].astype(int)
-    st.dataframe(df, height=100)
 
+    row = st.columns(3)
+    row[0].markdown("#### raw data - Cleaned CBCR data")
+    row[0].dataframe(df)
+    df_dropna = df.dropna()
+    row[1].markdown("#### drop na")
+    row[1].dataframe(df_dropna)
+    row[1].markdown("df len " + str(len(df)))
+    row[1].markdown("drop len " + str(len(df_dropna)))
+
+    row[2].markdown("#### map")
     df_map = pd.read_csv(data_root_path + 'average-latitude-longitude-countries.csv')
     df = df.merge(df_map, left_on='jur_name', right_on='Country')
-    st.map(df,
+    row[2].map(df,
            latitude='Latitude',
            longitude='Longitude',
            size='taxe_paid',
            # color='sector'
            )
-    st.caption('Plot of all records on a map.')
+    row[1].caption('Plot of all records on a map.')
 
-    st.markdown("## drop na")
-    df_dropna = df.dropna()
-    st.markdown("df len " + str(len(df)))
-    st.markdown("drop len " + str(len(df_dropna)))
-    st.dataframe(df_dropna)
+
 
     st.markdown('''    
     ## CBCR data for the selected company
@@ -70,7 +75,6 @@ def show_company():
             'fiscal year'
         )
 
-    st.dataframe(df_selected_company)
 
     st.markdown('''
     # 1. Reports disclosed
@@ -85,7 +89,9 @@ def show_company():
     number of report produce by the company on the given year
     ....
     ''')
-    st.map(df_selected_company,
+    row = st.columns(2)
+    row[0].dataframe(df_selected_company)
+    row[1].map(df_selected_company,
            latitude='Latitude',
            longitude='Longitude',
            size='taxe_paid',
@@ -103,11 +109,12 @@ def show_company():
     df_selected_company_per_year.columns = df_selected_company_per_year.columns.map('_'.join)
     df_selected_company_per_year = df_selected_company_per_year.reset_index()
 
-    st.markdown('''#### dataframe of selected company peryear''')
-    st.dataframe(df_selected_company_per_year)
+    row = st.columns(2)
+    row[0].markdown('''#### dataframe of selected company peryear''')
+    row[0].dataframe(df_selected_company_per_year)
 
-    st.markdown('''#### line chart showing the evolution of number of report over the time''')
-    st.line_chart(df_selected_company_per_year, x='year', y='year_count')
+    row[1].markdown('''#### line chart showing the evolution of number of report over the time''')
+    row[1].line_chart(df_selected_company_per_year, x='year', y='year_count')
 
     st.markdown('''
     ### - comparison with sector / country
@@ -127,7 +134,8 @@ def show_company():
     )
     df_company_per_year.columns = df_company_per_year.columns.map('_'.join)
     df_company_per_year = df_company_per_year.reset_index()
-    st.dataframe(df_company_per_year)
+    row = st.columns(2)
+    row[0].dataframe(df_company_per_year)
 
     fig = px.box(df_company_per_year, x="year", y="year_count")
     plot_min = df_selected_company_per_year['year'].min()
@@ -139,7 +147,7 @@ def show_company():
         y=list(df_selected_company_per_year['year_count']),
         mode='lines', xaxis='x2',
         showlegend=False, line=dict(dash='dash', color="firebrick", width=5))
-    st.plotly_chart(fig)
+    row[1].plotly_chart(fig)
 
     st.markdown('''
     #### - per sector
@@ -152,8 +160,11 @@ def show_company():
     )
     df_per_sector_per_year.columns = df_per_sector_per_year.columns.map('_'.join)
     df_per_sector_per_year = df_per_sector_per_year.reset_index()
-
-    st.line_chart(df_per_sector_per_year, x='year', y='year_count', color='sector')
+    row = st.columns(3)
+    row[0].table(df_per_sector_per_year.head(5))
+    my_expander = row[0].expander(label='full table')
+    my_expander.table(df_per_sector_per_year)
+    row[1].line_chart(df_per_sector_per_year, x='year', y='year_count', color='sector')
     st.markdown('''
        By sector, distribution of the number of report (for any year)
        ''')
@@ -166,7 +177,7 @@ def show_company():
     df_per_sector.columns = df_per_sector.columns.map('_'.join)
     df_per_sector = df_per_sector.reset_index()
     fig = px.box(df_per_sector, x="sector", y="year_count")
-    st.plotly_chart(fig)
+    row[2].plotly_chart(fig)
 
     st.markdown('''
        In the same sector as the selected company, distribution of the number of report
@@ -174,7 +185,8 @@ def show_company():
        ''')
     company_sector = list(df_selected_company['sector'].unique())[0]
     df_of_sector = df[df['sector'] == company_sector]
-    st.dataframe(df_of_sector)
+    row = st.columns(2)
+    row[0].dataframe(df_of_sector)
     df_of_sector_per_year = df_of_sector.groupby(['year', 'mnc']).aggregate(
         {
             'year': ['count'],
@@ -194,7 +206,7 @@ def show_company():
         y=list(df_of_sector_per_year['year_count']),
         mode='lines', xaxis='x2',
         showlegend=False, line=dict(dash='dash', color="firebrick", width=5))
-    st.plotly_chart(fig)
+    row[1].plotly_chart(fig)
 
     st.markdown('''
     #### - per country
@@ -208,8 +220,9 @@ def show_company():
     )
     df_per_country_per_year.columns = df_per_country_per_year.columns.map('_'.join)
     df_per_country_per_year = df_per_country_per_year.reset_index()
-    st.dataframe(df_per_country_per_year)
-    st.line_chart(df_per_country_per_year, x='year', y='year_count', color='jur_name')
+    row = st.columns(3)
+    row[0].dataframe(df_per_country_per_year)
+    row[1].line_chart(df_per_country_per_year, x='year', y='year_count', color='jur_name')
 
     st.markdown('''
        By country, distribution of the number of report (for any year)
@@ -223,7 +236,7 @@ def show_company():
     df_per_country.columns = df_per_country.columns.map('_'.join)
     df_per_country = df_per_country.reset_index()
     fig = px.box(df_per_country, x="jur_name", y="year_count")
-    st.plotly_chart(fig)
+    row[2].plotly_chart(fig)
 
     st.markdown('''
     # 2. Analysis of CbCRs published

@@ -27,7 +27,7 @@ def run():
 
 
     pages = [
-        "Home", "publication trends explorer",
+        "Home", "viz", "publication trends explorer",
          "intra-report data explorer",  "methodology",
          "faq", "download data", "contact", "GitHub"
      ]
@@ -65,6 +65,7 @@ def run():
 
     functions = {
         "Home": pg.show_home,
+        "viz": pg.show_all_viz,
         "publication trends explorer": pg.show_publication,
         "intra-report data explorer": pg.show_company,
         "methodology": pg.show_methodology,
