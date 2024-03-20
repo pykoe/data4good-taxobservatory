@@ -22,7 +22,7 @@ def run():
     st.set_page_config(
         page_title="Company explorer",
         page_icon="👋",
-        initial_sidebar_state="auto",
+        initial_sidebar_state="collapsed", # auto
         layout = "wide"
     )
 
