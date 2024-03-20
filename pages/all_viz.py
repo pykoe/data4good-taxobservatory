@@ -9,7 +9,7 @@ from streamlit.logger import get_logger
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-
+import matplotlib.pyplot as plt
 
 def show_all_viz():
 
@@ -153,7 +153,7 @@ def show_all_viz():
 
     def breakdown_of_reports_by_sector_hq_country():
         row = st.columns(6)
-        import matplotlib.pyplot as plt
+
         # count distinct mnc x year, by sector / country
 
         df_ = df.groupby(['year', 'mnc', 'sector']).count().reset_index()
@@ -161,8 +161,6 @@ def show_all_viz():
         row[0].table(df_.head(5))
         tab = row[0].expander(label='all')
         tab.table(df_)
-
-
 
         # Display the plot in Streamlit
         fig, ax = plt.subplots()

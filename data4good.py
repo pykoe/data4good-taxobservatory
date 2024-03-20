@@ -18,13 +18,13 @@ LOGGER = get_logger(__name__)
 
 
 def run():
+
     st.set_page_config(
         page_title="Company explorer",
         page_icon="👋",
-        initial_sidebar_state="collapsed",
+        initial_sidebar_state="auto",
         layout = "wide"
     )
-
 
     pages = [
         "Home", "viz", "publication trends explorer",
@@ -62,6 +62,15 @@ def run():
         styles=styles,
         adjust=False,
     )
+
+    # Create a sidebar selection
+    selection = st.sidebar.radio(
+        "Test page hiding",
+        ["Show all pages", "Hide pages 1 and 2", "Hide Other apps Section"],
+    )
+
+    # Define a list of pages
+    pages = ["Example One", "Example Two", "Other apps"]
 
     functions = {
         "Home": pg.show_home,
