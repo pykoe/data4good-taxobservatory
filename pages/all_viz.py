@@ -1,3 +1,6 @@
+# streamlit run /media/pykoe/354d12b6-2f35-4a36-be0a-16b2867537f5/pykoe/PycharmProjects/pykoe-data4good-taxobservatory/data4good.py
+
+
 from datetime import datetime
 
 import pandas as pd
@@ -20,7 +23,6 @@ def show_all_viz():
     df = pd.read_csv(data_root_path + 'dataset_multi_years_cleaned_completed (1).tab',
                      sep='\t')
     df['year'] = df['year'].astype(int)
-
 
     company_list = list(df['mnc'].unique())[::-1]
     selected_company = st.selectbox('Select a company', company_list,
@@ -55,10 +57,12 @@ def show_all_viz():
         row = st.columns(6)
         row[0].write("Number of tracked reports")
         row[1].write("raw figure")
+
         number_of_tracked_reports = len(df.groupby(['year', 'mnc'])['mnc'])
         number_of_tracked_reports_company = len(df_selected_company.groupby(['year'])['year'])
         number_of_tracked_reports_sector = len(df_selected_sector.groupby(['year', 'mnc'])['year'])
         number_of_tracked_reports_country = len(df_selected_country.groupby(['year', 'mnc'])['year'])
+
         row[1].write('total ' + str(number_of_tracked_reports))
         row[1].write('per company (ex:' + selected_company + ')' + str(number_of_tracked_reports_company))
         row[1].write('per sector (ex:' + selected_sector + ')' + str(number_of_tracked_reports_sector))
@@ -84,40 +88,56 @@ def show_all_viz():
         row[0].write("Number of tracked reports over time")
         row[1].write("bar chart / line chart")
         row[1].write("st.line_chart(df_count, x='year', y='mnc')")
+
         df_count = df.groupby(['year'])['mnc'].nunique().reset_index()
+
         row[1].line_chart(df_count, x='year', y='mnc')
 
         row[1].write("st.bar_chart(df_count, x='year', y='mnc')")
+
         row[1].bar_chart(df_count, x='year', y='mnc')
+
         row[2].write("count distinct mnc x year, by year")
         row[2].write("df.groupby(['year'])['mnc'].nunique().reset_index()")
         row[2].table(df_count)
 
         row[3].write("selected company")
         row[3].write("df_selected_company.groupby(['year'])['mnc'].nunique().reset_index()")
+
         df_count_company = df_selected_company.groupby(['year'])['mnc'].nunique().reset_index()
+
         row[3].line_chart(df_count_company, x='year', y='mnc')
         row[3].write("all company")
         row[3].write("df.groupby(['year'])['mnc'].nunique().reset_index()")
+
         df_count_all_company = df.groupby(['year'])['mnc'].nunique().reset_index()
+
         row[3].line_chart(df_count_all_company, x='year', y='mnc')
 
         row[4].write("selected sector")
         row[4].write("df_selected_sector.groupby(['year'])['mnc'].nunique().reset_index()")
+
         df_count_sector = df_selected_sector.groupby(['year'])['mnc'].nunique().reset_index()
+
         row[4].line_chart(df_count_sector, x='year', y='mnc')
         row[4].write("all sector")
         row[4].write("df.groupby(['year', 'sector'])['mnc'].nunique().reset_index()")
+
         df_count_all_sector = df.groupby(['year', 'sector'])['mnc'].nunique().reset_index()
+
         row[4].line_chart(df_count_all_sector, x='year', y='mnc', color='sector')
 
         row[5].write("selected country")
         row[5].write("df_selected_country.groupby(['year'])['mnc'].nunique().reset_index()")
+
         df_count_country = df_selected_country.groupby(['year'])['mnc'].nunique().reset_index()
+
         row[5].line_chart(df_count_country, x='year', y='mnc')
         row[5].write("all country")
         row[5].write("df.groupby(['year', 'jur_name'])['mnc'].nunique().reset_index()")
+
         df_count_all_country = df.groupby(['year', 'jur_name'])['mnc'].nunique().reset_index()
+
         row[5].line_chart(df_count_all_country, x='year', y='mnc', color='jur_name')
     number_of_tracked_reports_over_time()
 
@@ -150,6 +170,7 @@ def show_all_viz():
         tab = row[5].expander(label='all')
         tab.table(df_number_of_tracked_mnc_country)
     number_of_tracked_mnc()
+
 
     def breakdown_of_reports_by_sector_hq_country():
         row = st.columns(6)
@@ -185,4 +206,12 @@ def show_all_viz():
         ''')
     breakdown_of_reports_by_sector_hq_country()
 
+    def sample_vis(container, df):
+        # data treatment
+        df_to_viz = df.groupby(['year', 'mnc', 'sector']).count().reset_index()
 
+        # data viz
+        container.write("# row X")
+        container.table(df_to_viz.head(5))
+
+    sample_vis(st, df)

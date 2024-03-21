@@ -23,7 +23,7 @@ def run():
         page_title="Company explorer",
         page_icon="👋",
         initial_sidebar_state="collapsed", # "auto", "expanded", "collapsed"
-        layout = "wide"
+        layout="wide"
     )
 
     pages = [
